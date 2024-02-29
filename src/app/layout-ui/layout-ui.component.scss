@@ -1,0 +1,53 @@
+.content-container {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.sidenav-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  background: rgb(51, 50, 50);
+}
+
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.title {
+  margin-left: 25px;
+}
+
+.sidenav-items {
+  margin-top: 15px;
+
+  button {
+    color: white;
+    width: 100%;
+  }
+
+  .mdc-button {
+    justify-content: flex-start;
+  }
+}
+
+.is-mobile {
+  .header-container {
+    position: fixed;
+    /* Make sure the toolbar will stay on top of the content as it scrolls past. */
+    z-index: 2;
+  }
+
+  .content-container {
+    /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
+       `<body>` to be our scrolling element for mobile layouts. */
+    flex: 1 0 auto;
+  }
+}

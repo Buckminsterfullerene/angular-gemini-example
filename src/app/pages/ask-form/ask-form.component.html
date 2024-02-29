@@ -1,0 +1,69 @@
+<div class="page-wrapper">
+  <div class="form-container">
+    <form [formGroup]="askForm" (ngSubmit)="submitQuestion()">
+      <div class="form-wrapper">
+        <mat-form-field appearance="outline">
+          <mat-label>Ask a question</mat-label>
+          <input matInput placeholder="" formControlName="ask" required>
+          @if (askForm.get('ask')?.value) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="askForm.get('ask')?.setValue('')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+
+          @if (isSpeechAvailable) {
+            <button matSuffix
+                    mat-icon-button
+                    aria-label="Use microphone to ask gemini"
+                    [color]="micColor()"
+                    (click)="speechToText()">
+              <mat-icon matSuffix aria-hidden="true">microphone</mat-icon>
+            </button>
+          }
+
+          <button matSuffix mat-icon-button color="primary" type="submit"
+                  [disabled]="disableAskButton() || isSpeechActive()">
+            <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (!isSpeechAvailable) {
+          <p>There is a speech to text option available in Google Chrome.</p>
+        }
+
+        @if (isSpeechAvailable) {
+          <mat-form-field appearance="outline">
+            <mat-label>Select a language</mat-label>
+            <mat-select formControlName="language">
+              @for (lang of languages; track lang) {
+                <mat-option [value]="lang.lang">
+                  {{ lang.label }} [{{ lang.lang }}]
+                  @if (lang.country) {
+                    - {{ lang.country }}
+                  }
+                </mat-option>
+              }
+            </mat-select>
+            <mat-hint>The selected language is for speech only. Not the language returned from Gemini.</mat-hint>
+          </mat-form-field>
+        }
+      </div>
+    </form>
+  </div>
+
+
+  <div class="answer">
+    @if (generativeResponse !== '') {
+      <app-response [generativeResponse]="generativeResponse"></app-response>
+    }
+  </div>
+</div>
+
+@if (isLoading()) {
+  <div class="spinner-overlay">
+    <div class="spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+}
+

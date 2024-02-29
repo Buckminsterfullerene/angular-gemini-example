@@ -1,0 +1,27 @@
+<div class="page-wrapper">
+  <div class="form-container">
+  <h1>Google Gemini</h1>
+  <h2>with Angular POC</h2>
+  <p>This POC is to try to use Google's Gemini with Angular based on their <a href="https://ai.google.dev/tutorials/web_quickstart" target="_blank">documentation</a></p>
+  <p>Google Gemini needs to have an API key for it to work. If you don't have an API key, you can get one
+    <a href="https://makersuite.google.com/app/apikey" target="_blank">here</a>.</p>
+  <form [formGroup]="keyForm" (ngSubmit)="submitKey()">
+    <div class="form-wrapper">
+      <mat-form-field appearance="outline">
+        <mat-label>Enter your API Key</mat-label>
+        <input matInput formControlName="key" required>
+        <mat-icon matSuffix>key</mat-icon>
+        @if (keyForm.get('key')?.invalid) {
+          <mat-error>{{getErrorMessage()}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-checkbox class="example-margin" color="primary" formControlName="remember">
+        Remember me
+      </mat-checkbox>
+      <mat-hint>Select if you want to save your API key in localstorage. You will have the option to remove your key.</mat-hint>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </div>
+  </form>
+  </div>
+</div>

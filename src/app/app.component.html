@@ -1,0 +1,13 @@
+@defer (on viewport) {
+  <router-outlet></router-outlet>
+} @placeholder {
+  <div class="spinner">Loading...</div>
+} @loading (after 1s; minimum 2s) {
+  <div class="spinner"><mat-spinner></mat-spinner></div>
+}
+
+@if (spinnerService.isLoading()) {
+  <app-spinner></app-spinner>
+}
+
+
