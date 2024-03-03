@@ -48,9 +48,17 @@
           </mat-form-field>
         }
       </div>
+
+      <!--      <div class="file-input">-->
+      <!--      <input type="file" id="myFile" name="filename">-->
+      <!--      </div>-->
+
+
     </form>
   </div>
-
+  @if (menuService.showFileInput()) {
+    <file-upload (filesEvent)="manageFiles($event)"></file-upload>
+  }
 
   <div class="answer">
     @if (generativeResponse !== '') {

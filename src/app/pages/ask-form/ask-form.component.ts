@@ -1,9 +1,9 @@
-import { afterNextRender, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GenerativeModel } from '@google/generative-ai';
+import { GenerateContentResult, GenerativeModel } from '@google/generative-ai';
 import { GeminiService } from '../../services/gemini.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,6 +12,9 @@ import { ResponseComponent } from './response/response.component';
 import { WebSpeechService } from '../../services/web-speech.service';
 import { ILanguage } from '../../interfaces/i-language';
 import { MatSelectModule } from '@angular/material/select';
+import { GenerativeModelType } from '../../enums/global';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
   selector: 'app-ask-form',
@@ -25,6 +28,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatProgressSpinnerModule,
     MatSelectModule,
     ResponseComponent,
+    FileUploadComponent,
   ],
   templateUrl: './ask-form.component.html',
   styleUrl: './ask-form.component.scss'
@@ -34,10 +38,12 @@ export class AskFormComponent {
   generativeResponse? = '';
   languages: ILanguage[];
   isSpeechAvailable: boolean;
+  files: File[] = [];
   micColor = signal('');
   disableAskButton = signal(false);
   isLoading = signal(false);
   isSpeechActive = signal(false);
+  menuService = inject(MenuService);
 
   #formBuilder = inject(FormBuilder);
   #geminiService = inject(GeminiService);
@@ -55,10 +61,6 @@ export class AskFormComponent {
 
     this.languages = this.#webSpeechService.languages;
     this.isSpeechAvailable = this.#webSpeechService.isWebSpeechAvailable;
-
-    afterNextRender(() => {
-      this.#generativeModel = this.#geminiService.getGenerativeModel();
-    });
   }
 
   async submitQuestion() {
@@ -70,14 +72,39 @@ export class AskFormComponent {
     }
 
     try {
-      const result = await this.#generativeModel?.generateContent([
-        this.askForm.value['ask'].trim()
-      ]);
-      const response = result?.response;
-      if (response?.text()) {
-        this.generativeResponse = formatStringToHtml(response?.text());
+      let result: GenerateContentResult;
+
+      if (this.menuService.showFileInput() && this.files.length > 0) {
+        this.#generativeModel = this.#geminiService.getGenerativeModel(GenerativeModelType.geminiProVision);
+        // const fileInputEl = document.querySelector("input[type=file]");
+        if (this.menuService.showFileInput()) {
+          const imageParts = await Promise.all(
+            // @ts-ignore
+            // [ ...fileInputEl!.files ].map(this.fileToGenerativePart)
+            [ ...this.files ].map(this.#fileToGenerativePart)
+          );
+
+          result = await this.#generativeModel?.generateContent([
+            this.askForm.value['ask'].trim(), ...imageParts
+          ]);
+          const response = result?.response;
+          if (response?.text()) {
+            this.generativeResponse = formatStringToHtml(response?.text());
+          } else {
+            this.generativeResponse = 'NO RESPONSE';
+          }
+        }
       } else {
-        this.generativeResponse = 'NO RESPONSE';
+        this.#generativeModel = this.#geminiService.getGenerativeModel(GenerativeModelType.geminiPro);
+        result = await this.#generativeModel?.generateContent([
+          this.askForm.value['ask'].trim()
+        ]);
+        const response = result?.response;
+        if (response?.text()) {
+          this.generativeResponse = formatStringToHtml(response?.text());
+        } else {
+          this.generativeResponse = 'NO RESPONSE';
+        }
       }
 
       this.disableAskButton.set(false);
@@ -101,4 +128,22 @@ export class AskFormComponent {
     this.isSpeechActive.set(false);
     this.micColor.set('');
   }
+
+  manageFiles(files: File[]) {
+    this.files = files;
+  }
+
+  // Converts a File object to a GoogleGenerativeAI.Part object.
+  async #fileToGenerativePart(file: any) {
+    const base64EncodedDataPromise = new Promise((resolve) => {
+      const reader = new FileReader();
+      // @ts-ignore
+      reader.onloadend = () => resolve(reader.result!.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+    return {
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+    };
+  }
+
 }

@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../services/api.service';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { MenuService } from '../services/menu.service';
 
 @Component({
   selector: 'app-layout-ui',
@@ -24,6 +25,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 export class LayoutUiComponent implements OnDestroy {
   isApiKeyStored = false;
   mobileQuery: MediaQueryList;
+  menuService = inject(MenuService);
 
   #apiService = inject(ApiService);
   #router = inject(Router);
@@ -44,5 +46,13 @@ export class LayoutUiComponent implements OnDestroy {
     this.#apiService.apiKey.set('');
     this.#apiService.removeStorageKey();
     this.#router.navigateByUrl('/enter');
+  }
+
+  toggleFileInput() {
+    this.menuService.showFileInput.set(!this.menuService.showFileInput());
+  }
+
+  toggleDrawingCanvas() {
+    this.menuService.showDrawingCanvas.set(!this.menuService.showDrawingCanvas());
   }
 }

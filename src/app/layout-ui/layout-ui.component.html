@@ -3,7 +3,7 @@
     <button mat-icon-button color="basic" (click)="sidenav.toggle()" aria-label="Toggle menu">
       <mat-icon>menu</mat-icon>
     </button>
-    <span class="title">Google Gemini with Angular POC</span>
+    <span class="title">Google Gemini with Angular Example</span>
   </mat-toolbar>
 
   <mat-sidenav-container class="content-container" [style.margin-top.px]="mobileQuery.matches ? -3 : 0">
@@ -18,8 +18,14 @@
         @if (isApiKeyStored) {
           <button mat-button (click)="clearApiKey()">Clear API Key</button>
         }
-        <button mat-button>Add image</button>
-        <button mat-button>Add drawing canvas</button>
+        <button mat-button (click)="toggleFileInput()">
+          @if (menuService.showFileInput()) {
+            Remove image upload
+          } @else {
+            Add image upload
+          }
+        </button>
+        <button mat-button (click)="toggleDrawingCanvas()">Add drawing canvas</button>
       </div>
 
     </mat-sidenav>

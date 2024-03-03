@@ -1,0 +1,24 @@
+<div style="padding: 15px;">
+  <div>
+    <div class="upload-zone" appFileDnd (filesChangeEmitter)="onFileChange($event)">
+      <div class="text-wrapper">
+        <div class="centered">Drop here!</div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <mat-list>
+      <h3 mat-subheader>Files</h3>
+      @for (file of files; track file) {
+        <mat-list-item>
+          <div class="list-item-container">
+          <mat-icon matListItemIcon>folder</mat-icon>
+          <div class="file-container">
+          <h4 matListItemTitle mat-line>{{ file.name }}</h4>
+          <button matListItemLine mat-raised-button color="warn" (click)="deleteFile(file)">Delete</button></div></div>
+          <mat-divider></mat-divider>
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+</div>

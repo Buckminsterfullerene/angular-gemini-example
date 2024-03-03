@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { GenerativeModel, GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 import { ISafetySettings } from '../interfaces/i-safety-settings';
 import { ApiService } from './api.service';
+import { GenerativeModelType } from '../enums/global';
 
 
 @Injectable({
@@ -34,13 +35,13 @@ export class GeminiService {
 
   #apiService = inject(ApiService);
 
-  getGenerativeModel(): GenerativeModel {
+  getGenerativeModel(modelType: GenerativeModelType): GenerativeModel {
     const api = new GoogleGenerativeAI(
        this.#apiService.apiKey().toString()
     );
 
     return api.getGenerativeModel({
-      model: 'gemini-pro'
+      model: modelType
       // safetySettings: this.#safetySettings
     });
   }

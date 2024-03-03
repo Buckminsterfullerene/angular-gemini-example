@@ -10,6 +10,9 @@ More information on Google Gemini can be found [here](https://gemini.google.com)
 
 The application will prompt you to give your API key.  It will then store it in localstorage, so you do not have to enter it all the time.  There is an option to remove your key for security purposes.
 
+
+[Demo site](https://buckminsterfullerene.github.io/angular-gemini-example/)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
