@@ -1,0 +1,1 @@
+import{C as o,D as t}from"./chunk-MUHLO5UH.js";import"./chunk-Y35WMTEM.js";import"./chunk-IX6G3U3V.js";import"./chunk-IMNR7PET.js";var p=[{path:"",component:t,children:[{path:"",component:o}]}];export{p as LAYOUT_UI_ROUTES};
